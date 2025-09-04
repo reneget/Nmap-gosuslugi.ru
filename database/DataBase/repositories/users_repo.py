@@ -42,6 +42,15 @@ class UserRepo:
             return user
         except Exception:
             user_repo_logger.error(f'Error when getting user [{user_id}] from DataBase', exc_info=True)
+    
+    def get_user_key_properties(self, user_id: int) -> tuple[str, str] | None:
+        try:
+            secret_key = self.db.query(Users.secret_key).filter(Users.user_id == user_id).first()
+            counter = self.db.query(Users.counter).filter(Users.user_id == user_id).first()
+            user_repo_logger.info(f'Successfully retrieving the key properties [{secret_key, counter}] from the database')
+            return secret_key, counter
+        except Exception:
+            user_repo_logger.error(f'Error when getting user [{user_id}] from DataBase', exc_info=True)
 
     def get_all_users(self) -> list[Type[Users]] | None:
         try:
@@ -82,6 +91,7 @@ class UserRepo:
         user = self.get_user_by_id(user_id)
         try:
             user.unique_key = new_key
+            user.counter = user.counter + 1
             self.db.commit()
             self.db.refresh(user)
             user_repo_logger.info(f'Successfully update user [{repr(user)}] secret key in DataBase')

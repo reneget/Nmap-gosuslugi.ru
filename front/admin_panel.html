@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель контроля доступа</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: black;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background-color: #333;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .table-container {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: white;
+            color: black;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .pagination button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination button.active {
+            background-color: black;
+            color: white;
+            border-color: black;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            margin: 0 15px;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            padding: 6px 12px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .edit-btn:hover {
+            background-color: #333;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .form-row input, .form-row select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-row input:focus, .form-row select:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: black;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #333;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .btn-secondary:hover {
+            background-color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Панель контроля доступа</h1>
+        <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Поиск по ФИО, роли или secret..." onkeyup="filterTable()">
+    </div>
+
+    <div class="table-container">
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ФИО</th>
+                    <th>Роль</th>
+                    <th>Secret</th>
+                    <th>Дата создания</th>
+                    <th>Активен</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        <button id="prevBtn" onclick="previousPage()">Предыдущая</button>
+        <span class="page-info" id="pageInfo"></span>
+        <button id="nextBtn" onclick="nextPage()">Следующая</button>
+    </div>
+
+    <!-- Модальное окно редактирования -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Редактировать пользователя</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="editForm">
+                <div class="form-row">
+                    <label for="editFio">ФИО</label>
+                    <input type="text" id="editFio" name="fio" required>
+                </div>
+                <div class="form-row">
+                    <label for="editRole">Роль</label>
+                    <select id="editRole" name="role" required>
+                        <option value="Администратор">Администратор</option>
+                        <option value="Модератор">Модератор</option>
+                        <option value="Пользователь">Пользователь</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="editSecret">Secret</label>
+                    <input type="text" id="editSecret" name="secret" required>
+                </div>
+                <div class="form-row">
+                    <label for="editActive">Активен</label>
+                    <select id="editActive" name="active" required>
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Тестовые данные
+        const users = [
+            { id: 1, fio: "Иванов Иван Иванович", role: "Администратор", secret: "secret123", date: "2025-01-15", active: true },
+            { id: 2, fio: "Петров Петр Петрович", role: "Модератор", secret: "secret456", date: "2025-01-16", active: true },
+            { id: 3, fio: "Сидоров Сидор Сидорович", role: "Пользователь", secret: "secret789", date: "2025-01-17", active: false },
+            { id: 4, fio: "Козлов Козел Козлович", role: "Администратор", secret: "secret101", date: "2025-01-18", active: true },
+            { id: 5, fio: "Волков Волк Волкович", role: "Модератор", secret: "secret202", date: "2025-01-19", active: true },
+            { id: 6, fio: "Медведев Медведь Медведевич", role: "Пользователь", secret: "secret303", date: "2025-01-20", active: false },
+            { id: 7, fio: "Лисов Лис Лисович", role: "Администратор", secret: "secret404", date: "2025-01-21", active: true },
+            { id: 8, fio: "Зайцев Заяц Зайцевич", role: "Модератор", secret: "secret505", date: "2025-01-22", active: true },
+            { id: 9, fio: "Белов Бел Белович", role: "Пользователь", secret: "secret606", date: "2025-01-23", active: true },
+            { id: 10, fio: "Чернов Черн Чернович", role: "Администратор", secret: "secret707", date: "2025-01-24", active: false },
+            { id: 11, fio: "Краснов Красн Краснович", role: "Модератор", secret: "secret808", date: "2025-01-25", active: true },
+            { id: 12, fio: "Желтов Желт Желтович", role: "Пользователь", secret: "secret909", date: "2025-01-26", active: true },
+            { id: 13, fio: "Синева Синий Синевич", role: "Администратор", secret: "secret110", date: "2025-01-27", active: true },
+            { id: 14, fio: "Зеленов Зелен Зеленович", role: "Модератор", secret: "secret220", date: "2025-01-28", active: false },
+            { id: 15, fio: "Оранжев Оранж Оранжевич", role: "Пользователь", secret: "secret330", date: "2025-01-29", active: true }
+        ];
+
+        let currentPage = 1;
+        const usersPerPage = 10;
+        let filteredUsers = [...users];
+
+        function displayUsers() {
+            const tableBody = document.getElementById('tableBody');
+            const startIndex = (currentPage - 1) * usersPerPage;
+            const endIndex = startIndex + usersPerPage;
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+            tableBody.innerHTML = '';
+            pageUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.fio}</td>
+                    <td>${user.role}</td>
+                    <td>${user.secret}</td>
+                    <td>${user.date}</td>
+                    <td>${user.active ? 'Да' : 'Нет'}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editUser(${user.id})">Редактировать</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            const pageInfo = document.getElementById('pageInfo');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            pageInfo.textContent = `Страница ${currentPage} из ${totalPages}`;
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayUsers();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayUsers();
+            }
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            filteredUsers = users.filter(user => 
+                user.fio.toLowerCase().includes(searchTerm) ||
+                user.role.toLowerCase().includes(searchTerm) ||
+                user.secret.toLowerCase().includes(searchTerm)
+            );
+            currentPage = 1;
+            displayUsers();
+        }
+
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                window.location.href = 'admin_login.html';
+            }
+        }
+
+        let editingUserId = null;
+
+        function editUser(userId) {
+            editingUserId = userId;
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                document.getElementById('editFio').value = user.fio;
+                document.getElementById('editRole').value = user.role;
+                document.getElementById('editSecret').value = user.secret;
+                document.getElementById('editActive').value = user.active.toString();
+                document.getElementById('editModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+            editingUserId = null;
+        }
+
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (editingUserId) {
+                const userIndex = users.findIndex(u => u.id === editingUserId);
+                if (userIndex !== -1) {
+                    users[userIndex].fio = document.getElementById('editFio').value;
+                    users[userIndex].role = document.getElementById('editRole').value;
+                    users[userIndex].secret = document.getElementById('editSecret').value;
+                    users[userIndex].active = document.getElementById('editActive').value === 'true';
+                    
+                    // Обновляем отображение
+                    filterTable();
+                    closeModal();
+                }
+            }
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        displayUsers();
+    </script>
+</body>
+</html>
