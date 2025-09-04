@@ -6,6 +6,7 @@ class User(BaseModel):
     full_name: str
     position: str
     unique_key: str
+    secret_key: str
 
 class User_update(BaseModel):
     full_name: Optional[str] = None
@@ -15,3 +16,4 @@ class User_create(BaseModel):
     full_name: str
     position: str
     unique_key: str
+    secret_key: str
