@@ -12,8 +12,8 @@ class Users(Base):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     full_name = Column(String, unique=False, nullable=False)
     position = Column(String, unique=False, nullable=False)
-    unique_key = Column(String, unique=True, nullable=False)
-    counter = Column(Integer, unique=False, nullable=False, default=1)
+    secret_key = Column(String, unique=True, nullable=False)
+    counter = Column(Integer, unique=False, nullable=False, default=0)
 
     def __repr__(self):
         try:
