@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from sqlalchemy.orm import Session
 
-from . import pydantic_models as pd_md 
-from DataBase.core.db_connection import get_db 
+from . import pydantic_models as pd_md
+from DataBase.core.db_connection import get_db
 from DataBase.repositories import UserRepo
 from ..functions import Functions_API as Func_API
 
@@ -14,6 +14,7 @@ user_router = APIRouter(
     prefix='/user',
     tags=['user']
 )
+
 
 @user_router.post('/create/user')
 async def create_user_route(user: pd_md.User_create, db: Session = Depends(get_db)):
@@ -30,6 +31,7 @@ async def create_user_route(user: pd_md.User_create, db: Session = Depends(get_d
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
 
 @user_router.get('/get/user/{user_id}')
 async def get_user_by_id_api(user_id: int, db: Session = Depends(get_db)):
@@ -55,6 +57,7 @@ async def get_user_by_id_api(user_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+
 @user_router.get('/get/all/users')
 async def get_user_by_id_api(db: Session = Depends(get_db)):
     try:
@@ -72,6 +75,7 @@ async def get_user_by_id_api(db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+
 @user_router.put('/update/user/{user_id}')
 async def update_user_api(user_id: int, user: pd_md.User_update, db: Session = Depends(get_db)):
     try:
@@ -85,7 +89,7 @@ async def update_user_api(user_id: int, user: pd_md.User_update, db: Session = D
                 detail='User not found'
             )
 
-        return  pd_md.User(**new_user.__dict__)
+        return pd_md.User(**new_user.__dict__)
     except HTTPException:
         user_logger.error('Error updating user', exc_info=True)
         raise
@@ -94,7 +98,8 @@ async def update_user_api(user_id: int, user: pd_md.User_update, db: Session = D
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-    
+
+
 @user_router.put('update/user/key/{user_id}')
 async def update_user_key_api(user_id: int, new_key: str, db: Session = Depends(get_db)):
     try:
@@ -116,7 +121,8 @@ async def update_user_key_api(user_id: int, new_key: str, db: Session = Depends(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-    
+
+
 @user_router.delete('/delete/user/{user_id}')
 async def delete_user_api(user_id: int, db: Session = Depends(get_db)):
     try:
@@ -138,5 +144,3 @@ async def delete_user_api(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
