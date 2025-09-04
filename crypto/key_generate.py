@@ -33,4 +33,3 @@ def generate_key(shared_secret: str, counter: int, output_format: str = 'base64'
 
 shared_secret = str(open('crypto/secret.txt', 'r').read())
 key_base64 = generate_key(shared_secret, counter, output_format='base64')
-print(f"Сгенерированный ключ (base64): {key_base64}")
