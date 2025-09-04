@@ -36,6 +36,6 @@ def generate_key(shared_secret: str, time_step: int = 30, output_format: str = '
     else:  
         return base64.b64encode(hmac_hash).decode('utf-8').rstrip('=')
 
-shared_secret = "pis'ka"
+shared_secret = str(open('crypto/secret.txt', 'r').read())
 key_base64 = generate_key(shared_secret, output_format='base64')
-print(f"Сгенерированный ключ (base64): {key_base64}")
+print(f"{key_base64}")
