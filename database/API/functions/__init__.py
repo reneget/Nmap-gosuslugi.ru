@@ -1,1 +1,1 @@
-from .func import Functions_API
+from .func import FunctionsAPI

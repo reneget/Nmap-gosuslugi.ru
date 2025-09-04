@@ -12,10 +12,16 @@ Base = declarative_base()
 
 
 def create_tables():
+    """
+    Creating all tables in the DataBase
+    """
     Base.metadata.create_all(bind=engine)
 
 
 def get_db():
+    """
+    Creating DataBase connection session
+    """
     db = SessionLocal()
     try:
         db_logger.info(f'DataBase connection session has been created')

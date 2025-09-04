@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from . import pydantic_models as pd_md 
 from DataBase.core.db_connection import get_db 
 from DataBase.repositories import UserRepo
-from ..functions import Functions_API as Func_API
+from ..functions import FunctionsAPI as Func_API
 
 import logging
 
@@ -17,6 +17,12 @@ user_router = APIRouter(
 
 @user_router.post('/create/user')
 async def create_user_route(user: pd_md.User_create, db: Session = Depends(get_db)):
+    """
+    Api router what creating new User
+    :param user:
+    :param db:
+    :return:
+    """
     try:
         user_logger.info('Request to create a new employee')
         created_user = UserRepo(db).create_user(**user.__dict__)
