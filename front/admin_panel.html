@@ -238,6 +238,78 @@
         .btn-secondary:hover {
             background-color: #bbb;
         }
+
+        .secret-field {
+            cursor: pointer;
+            user-select: none;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .secret-field:hover {
+            background-color: #f0f0f0;
+        }
+
+        .secret-field.revealed {
+            background-color: #e8f5e8;
+            font-family: monospace;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        .confirm-content {
+            background-color: white;
+            margin: 20% auto;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #dc3545;
+        }
+
+        .confirm-message {
+            margin-bottom: 25px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .confirm-actions .btn {
+            min-width: 100px;
+        }
     </style>
 </head>
 <body>
@@ -248,6 +320,7 @@
 
     <div class="search-container">
         <input type="text" class="search-input" id="searchInput" placeholder="Поиск по ФИО, роли или secret..." onkeyup="filterTable()">
+        <button class="btn btn-primary" onclick="createUser()" style="margin-left: 10px;">Создать пользователя</button>
     </div>
 
     <div class="table-container">
@@ -257,9 +330,10 @@
                     <th>ID</th>
                     <th>ФИО</th>
                     <th>Роль</th>
-                    <th>Secret</th>
-                    <th>Дата создания</th>
-                    <th>Активен</th>
+                    <th>Секрет</th>
+                    <th>Создан</th>
+                    <th>Окончание</th>
+                    <th>Доступ</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -290,24 +364,94 @@
                     <label for="editRole">Роль</label>
                     <select id="editRole" name="role" required>
                         <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Модератор</option>
+                        <option value="Модератор">Гость</option>
                         <option value="Пользователь">Пользователь</option>
                     </select>
                 </div>
                 <div class="form-row">
-                    <label for="editSecret">Secret</label>
-                    <input type="text" id="editSecret" name="secret" required>
+                    <label for="editSecret">Секрет</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="editSecret" name="secret" required style="flex: 1;">
+                        <button type="button" class="btn btn-secondary" onclick="generateEditSecret()" style="white-space: nowrap;">Сгенерировать</button>
+                    </div>
                 </div>
                 <div class="form-row">
-                    <label for="editActive">Активен</label>
+                    <label for="editEndDate">Окончание</label>
+                    <input type="date" id="editEndDate" name="endDate" required>
+                </div>
+                <div class="form-row">
+                    <label for="editActive">Доступ</label>
                     <select id="editActive" name="active" required>
                         <option value="true">Да</option>
                         <option value="false">Нет</option>
                     </select>
                 </div>
                 <div class="form-actions">
+                    <button type="button" class="btn btn-danger" onclick="deleteUser()" style="margin-right: auto;">Удалить</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="confirmModal" class="confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-title">Подтверждение удаления</div>
+            <div class="confirm-message">
+                Вы действительно хотите удалить пользователя<br>
+                <strong id="deleteUserName"></strong>?<br><br>
+                Это действие нельзя отменить.
+            </div>
+            <div class="confirm-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Отмена</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания пользователя -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Создать пользователя</h2>
+                <span class="close" onclick="closeCreateModal()">&times;</span>
+            </div>
+            <form id="createForm">
+                <div class="form-row">
+                    <label for="createFio">ФИО</label>
+                    <input type="text" id="createFio" name="fio" required>
+                </div>
+                <div class="form-row">
+                    <label for="createRole">Роль</label>
+                    <select id="createRole" name="role" required>
+                        <option value="Администратор">Администратор</option>
+                        <option value="Модератор">Гость</option>
+                        <option value="Пользователь">Пользователь</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="createSecret">Секрет</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="createSecret" name="secret" required style="flex: 1;">
+                        <button type="button" class="btn btn-secondary" onclick="generateSecret()" style="white-space: nowrap;">Сгенерировать</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="createEndDate">Окончание</label>
+                    <input type="date" id="createEndDate" name="endDate" required>
+                </div>
+                <div class="form-row">
+                    <label for="createActive">Доступ</label>
+                    <select id="createActive" name="active" required>
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Создать</button>
                 </div>
             </form>
         </div>
@@ -316,21 +460,21 @@
     <script>
         // Тестовые данные
         const users = [
-            { id: 1, fio: "Иванов Иван Иванович", role: "Администратор", secret: "secret123", date: "2025-01-15", active: true },
-            { id: 2, fio: "Петров Петр Петрович", role: "Модератор", secret: "secret456", date: "2025-01-16", active: true },
-            { id: 3, fio: "Сидоров Сидор Сидорович", role: "Пользователь", secret: "secret789", date: "2025-01-17", active: false },
-            { id: 4, fio: "Козлов Козел Козлович", role: "Администратор", secret: "secret101", date: "2025-01-18", active: true },
-            { id: 5, fio: "Волков Волк Волкович", role: "Модератор", secret: "secret202", date: "2025-01-19", active: true },
-            { id: 6, fio: "Медведев Медведь Медведевич", role: "Пользователь", secret: "secret303", date: "2025-01-20", active: false },
-            { id: 7, fio: "Лисов Лис Лисович", role: "Администратор", secret: "secret404", date: "2025-01-21", active: true },
-            { id: 8, fio: "Зайцев Заяц Зайцевич", role: "Модератор", secret: "secret505", date: "2025-01-22", active: true },
-            { id: 9, fio: "Белов Бел Белович", role: "Пользователь", secret: "secret606", date: "2025-01-23", active: true },
-            { id: 10, fio: "Чернов Черн Чернович", role: "Администратор", secret: "secret707", date: "2025-01-24", active: false },
-            { id: 11, fio: "Краснов Красн Краснович", role: "Модератор", secret: "secret808", date: "2025-01-25", active: true },
-            { id: 12, fio: "Желтов Желт Желтович", role: "Пользователь", secret: "secret909", date: "2025-01-26", active: true },
-            { id: 13, fio: "Синева Синий Синевич", role: "Администратор", secret: "secret110", date: "2025-01-27", active: true },
-            { id: 14, fio: "Зеленов Зелен Зеленович", role: "Модератор", secret: "secret220", date: "2025-01-28", active: false },
-            { id: 15, fio: "Оранжев Оранж Оранжевич", role: "Пользователь", secret: "secret330", date: "2025-01-29", active: true }
+            { id: 1, fio: "Иванов Иван Иванович", role: "Администратор", secret: "secret123", date: "2025-01-15", endDate: "2026-01-15", active: true },
+            { id: 2, fio: "Петров Петр Петрович", role: "Модератор", secret: "secret456", date: "2025-01-16", endDate: "2026-01-16", active: true },
+            { id: 3, fio: "Сидоров Сидор Сидорович", role: "Пользователь", secret: "secret789", date: "2025-01-17", endDate: "2026-01-17", active: false },
+            { id: 4, fio: "Козлов Козел Козлович", role: "Администратор", secret: "secret101", date: "2025-01-18", endDate: "2026-01-18", active: true },
+            { id: 5, fio: "Волков Волк Волкович", role: "Модератор", secret: "secret202", date: "2025-01-19", endDate: "2026-01-19", active: true },
+            { id: 6, fio: "Медведев Медведь Медведевич", role: "Пользователь", secret: "secret303", date: "2025-01-20", endDate: "2026-01-20", active: false },
+            { id: 7, fio: "Лисов Лис Лисович", role: "Администратор", secret: "secret404", date: "2025-01-21", endDate: "2026-01-21", active: true },
+            { id: 8, fio: "Зайцев Заяц Зайцевич", role: "Модератор", secret: "secret505", date: "2025-01-22", endDate: "2026-01-22", active: true },
+            { id: 9, fio: "Белов Бел Белович", role: "Пользователь", secret: "secret606", date: "2025-01-23", endDate: "2026-01-23", active: true },
+            { id: 10, fio: "Чернов Черн Чернович", role: "Администратор", secret: "secret707", date: "2025-01-24", endDate: "2026-01-24", active: false },
+            { id: 11, fio: "Краснов Красн Краснович", role: "Модератор", secret: "secret808", date: "2025-01-25", endDate: "2026-01-25", active: true },
+            { id: 12, fio: "Желтов Желт Желтович", role: "Пользователь", secret: "secret909", date: "2025-01-26", endDate: "2026-01-26", active: true },
+            { id: 13, fio: "Синева Синий Синевич", role: "Администратор", secret: "secret110", date: "2025-01-27", endDate: "2026-01-27", active: true },
+            { id: 14, fio: "Зеленов Зелен Зеленович", role: "Модератор", secret: "secret220", date: "2025-01-28", endDate: "2026-01-28", active: false },
+            { id: 15, fio: "Оранжев Оранж Оранжевич", role: "Пользователь", secret: "secret330", date: "2025-01-29", endDate: "2026-01-29", active: true }
         ];
 
         let currentPage = 1;
@@ -350,8 +494,9 @@
                     <td>${user.id}</td>
                     <td>${user.fio}</td>
                     <td>${user.role}</td>
-                    <td>${user.secret}</td>
+                    <td><span class="secret-field" onclick="toggleSecret(this, '${user.secret}')">${'*'.repeat(user.secret.length)}</span></td>
                     <td>${user.date}</td>
+                    <td>${user.endDate}</td>
                     <td>${user.active ? 'Да' : 'Нет'}</td>
                     <td>
                         <button class="edit-btn" onclick="editUser(${user.id})">Редактировать</button>
@@ -415,6 +560,7 @@
                 document.getElementById('editFio').value = user.fio;
                 document.getElementById('editRole').value = user.role;
                 document.getElementById('editSecret').value = user.secret;
+                document.getElementById('editEndDate').value = user.endDate;
                 document.getElementById('editActive').value = user.active.toString();
                 document.getElementById('editModal').style.display = 'block';
             }
@@ -423,6 +569,69 @@
         function closeModal() {
             document.getElementById('editModal').style.display = 'none';
             editingUserId = null;
+        }
+
+        function createUser() {
+            document.getElementById('createModal').style.display = 'block';
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').style.display = 'none';
+            document.getElementById('createForm').reset();
+        }
+
+        function toggleSecret(element, secret) {
+            if (element.classList.contains('revealed')) {
+                element.textContent = '*'.repeat(secret.length);
+                element.classList.remove('revealed');
+            } else {
+                element.textContent = secret;
+                element.classList.add('revealed');
+            }
+        }
+
+        function generateSecret() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let secret = '';
+            for (let i = 0; i < 15; i++) {
+                secret += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('createSecret').value = secret;
+        }
+
+        function generateEditSecret() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let secret = '';
+            for (let i = 0; i < 15; i++) {
+                secret += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('editSecret').value = secret;
+        }
+
+        function deleteUser() {
+            if (editingUserId) {
+                const user = users.find(u => u.id === editingUserId);
+                if (user) {
+                    document.getElementById('deleteUserName').textContent = user.fio;
+                    document.getElementById('confirmModal').style.display = 'block';
+                }
+            }
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        function confirmDelete() {
+            if (editingUserId) {
+                const userIndex = users.findIndex(u => u.id === editingUserId);
+                if (userIndex !== -1) {
+                    users.splice(userIndex, 1);
+                    filterTable();
+                    closeModal();
+                    closeConfirmModal();
+                }
+            }
         }
 
         document.getElementById('editForm').addEventListener('submit', function(e) {
@@ -434,24 +643,50 @@
                     users[userIndex].fio = document.getElementById('editFio').value;
                     users[userIndex].role = document.getElementById('editRole').value;
                     users[userIndex].secret = document.getElementById('editSecret').value;
+                    users[userIndex].endDate = document.getElementById('editEndDate').value;
                     users[userIndex].active = document.getElementById('editActive').value === 'true';
                     
-                    // Обновляем отображение
                     filterTable();
                     closeModal();
                 }
             }
         });
 
-        // Закрытие модального окна при клике вне его
+        document.getElementById('createForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newUser = {
+                id: users.length + 1,
+                fio: document.getElementById('createFio').value,
+                role: document.getElementById('createRole').value,
+                secret: document.getElementById('createSecret').value,
+                date: new Date().toISOString().split('T')[0],
+                endDate: document.getElementById('createEndDate').value,
+                active: document.getElementById('createActive').value === 'true'
+            };
+            
+            users.push(newUser);
+            filterTable();
+            closeCreateModal();
+        });
+
         window.onclick = function(event) {
             const modal = document.getElementById('editModal');
             if (event.target === modal) {
                 closeModal();
             }
+            
+            const createModal = document.getElementById('createModal');
+            if (event.target === createModal) {
+                closeCreateModal();
+            }
+            
+            const confirmModal = document.getElementById('confirmModal');
+            if (event.target === confirmModal) {
+                closeConfirmModal();
+            }
         }
 
-        // Инициализация при загрузке страницы
         displayUsers();
     </script>
 </body>
