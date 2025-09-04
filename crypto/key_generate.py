@@ -3,7 +3,6 @@ import hashlib
 import struct
 import base64
 
-
 def generate_key(shared_secret: str, counter: int) -> str:
     """
     Генерирует ключ на основе секрета и счётчика.

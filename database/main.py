@@ -1,10 +1,12 @@
 from fastapi import FastAPI
+import uvicorn
 
 import logging
 
 import API
 from DataBase.core.db_connection import create_tables
 from log import config
+
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("requests").setLevel(logging.WARNING)

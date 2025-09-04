@@ -14,15 +14,15 @@ config = {
         }
     },
     'handlers': {
-        'grafana': {
-            'class': 'log.custom_handlers.LokiLogginHandler',
-            'url': main_config.loki.url,
-            'tags': main_config.loki.tags,
-            'auth':  main_config.loki.auth,
-            'version':  main_config.loki.version,
-            'formatter': 'debug',
-            'level': 'DEBUG',
-        },
+        # 'grafana': {
+        #     'class': 'log.custom_handlers.LokiLogginHandler',
+        #     'url': main_config.loki.url,
+        #     'tags': main_config.loki.tags,
+        #     'auth':  main_config.loki.auth,
+        #     'version':  main_config.loki.version,
+        #     'formatter': 'debug',
+        #     'level': 'DEBUG',
+        # },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'standart',
@@ -33,7 +33,7 @@ config = {
     'loggers':{
         '': {
             'level': 'DEBUG',
-            'handlers': ['grafana', 'console'],
+            'handlers': ['console'], # ['grafana', 'console'],
             'propagate': False
         },
     }
