@@ -2,25 +2,27 @@ import hmac
 import hashlib
 import struct
 import base64
+import secrets
 
-def generate_key(shared_secret: str, counter: int) -> str:
+def generate_entropy(length):
+    return secrets.token_hex(length)
+
+def generate_key(shared_secret: str, entropy: str) -> str:
     """
     Генерирует ключ на основе секрета и счётчика.
     :param shared_secret: секрет.
-    :param counter: счётчик (кол-во считываний).
-    :return: Строковый ключ (полный хэш, ~86-128 символов).
+    :param entropy: счётчик (кол-во считываний).
+    :return: Строковый ключ.
     """
     # Конвертируем счётчик в байты (big-endian, 8 байт)
-    counter_bytes = struct.pack('>Q', counter)
+    entropy_bytes = bytes.fromhex(entropy)
 
     # Кодируем секрет в байты
     secret_bytes = shared_secret.encode('utf-8')
 
     # Вычисляем HMAC-SHA512 от счётчика с использованием секрета
-    hmac_hash = hmac.new(secret_bytes, counter_bytes, hashlib.sha512).digest()
-    open('crypto/counter.txt', 'w').write(str(counter + 1))
+    hmac_hash = hmac.new(secret_bytes, entropy_bytes, hashlib.sha512).digest()
     return base64.b64encode(hmac_hash).decode('utf-8').rstrip('=')
 
-counter = int(open('crypto/counter.txt', 'r').read())
 shared_secret = str(open('crypto/secret.txt', 'r').read())
-key_base64 = generate_key(shared_secret, counter)
+key_base64 = generate_key(shared_secret, entropy=generate_entropy(16))
