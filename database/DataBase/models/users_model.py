@@ -10,12 +10,13 @@ class Users(Base):
     __tablename__ = 'Users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    full_name = Column(String(30), unique=False, nullable=False)
-    position = Column(String(50), unique=False, nullable=False)
-    unique_key = Column(String(100), unique=True, nullable=False)
+    full_name = Column(String, unique=False, nullable=False)
+    position = Column(String, unique=False, nullable=False)
+    unique_key = Column(String, unique=True, nullable=False)
+    counter = Column(Integer, unique=False, nullable=False, default=1)
 
     def __repr__(self):
         try:
-            return f'Users(user_id={self.user_id}, full_name={self.full_name}, position={self.position})'
+            return f'Users(user_id={self.user_id}, full_name={self.full_name}, position={self.position}, counter={self.counter})'
         except Exception as e:
             user_model_logger.error(f'Error from returning of string format User model', exc_info=True)
