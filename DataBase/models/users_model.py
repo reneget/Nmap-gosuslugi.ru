@@ -9,7 +9,8 @@ class Users(Base):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     full_name = Column(String(30), unique=False, nullable=False)
     position = Column(String(50), unique=False, nullable=False)
-    unique_key = Column(String(100), unique=True, nullable=False) 
+    unique_key = Column(String, unique=True, nullable=False) 
+    sekrert_key = Column(String, unique=True, nullable=False)
 
     def __repr__(self):
         return f'Users(user_id={self.user_id}, full_name={self.full_name}, position={self.position})'
