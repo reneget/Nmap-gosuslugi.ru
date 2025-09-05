@@ -22,29 +22,34 @@ def send_to_handler(user_id, entropy, pwd):
 
 def main():
     try:
-        # Получаем ID пользователя
-        user_id = input("Введите ID пользователя: ").strip()
-        if not user_id:
-            print("Ошибка: ID пользователя не может быть пустым")
-            return
+        results = []
         
-        # Получаем энтропию
-        entropy = input("Введите энтропию: ").strip()
-        if not entropy:
-            print("Ошибка: Энтропия не может быть пустой")
-            return
+        # Цикл на 2 итерации
+        for i in range(2):
+            # Получаем ID пользователя
+            user_id = input("Введите ID пользователя: ").strip()
+            if not user_id:
+                print("Ошибка: ID пользователя не может быть пустым")
+                return
+            
+            # Получаем энтропию
+            entropy = input("Введите энтропию: ").strip()
+            if not entropy:
+                print("Ошибка: Энтропия не может быть пустой")
+                return
+            
+            # Получаем пароль
+            pwd = input("Введите пароль: ").strip()
+            if not pwd:
+                print("Ошибка: Пароль не может быть пустым")
+                return
+            
+            # Отправляем данные в обработчик
+            result = send_to_handler(user_id, entropy, pwd)
+            results.append(result)
         
-        # Получаем пароль
-        pwd = input("Введите пароль: ").strip()
-        if not pwd:
-            print("Ошибка: Пароль не может быть пустым")
-            return
-        
-        # Отправляем данные в обработчик
-        result = send_to_handler(user_id, entropy, pwd)
-        
-        # Проверяем результат от обработчика
-        if result:
+        # Проверяем результаты от обработчика
+        if all(results):
             print("Доступ разрешен")
         else:
             print("Доступ запрещен")
