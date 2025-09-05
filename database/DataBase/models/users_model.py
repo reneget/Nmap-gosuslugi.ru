@@ -13,10 +13,9 @@ class Users(Base):
     full_name = Column(String, unique=False, nullable=False)
     position = Column(String, unique=False, nullable=False)
     secret_key = Column(String, unique=True, nullable=False)
-    counter = Column(Integer, unique=False, nullable=False, default=0)
 
     def __repr__(self):
         try:
-            return f'Users(user_id={self.user_id}, full_name={self.full_name}, position={self.position}, counter={self.counter})'
+            return f'Users(user_id={self.user_id}, full_name={self.full_name}, position={self.position})'
         except Exception as e:
             user_model_logger.error(f'Error from returning of string format User model', exc_info=True)

@@ -46,11 +46,10 @@ class UserRepo:
     def get_user_key_properties(self, user_id: int) -> tuple[str] | None:
         try:
             secret_key = self.db.query(Users.secret_key).filter(Users.user_id == user_id).scalar()
-            counter = self.db.query(Users.counter).filter(Users.user_id == user_id).scalar()
-            user_repo_logger.info(f'Successfully retrieving the key properties [{secret_key, counter}] from the database')
-            return secret_key, counter
+            user_repo_logger.info(f'Successfully retrieving the key properties [{secret_key}] from the database')
+            return secret_key
         except Exception:
-            user_repo_logger.error(f'Error when getting user [{user_id}] from DataBase', exc_info=True)
+            user_repo_logger.error(f'Error when getting user key properties [{user_id}] from DataBase', exc_info=True)
 
     def get_all_users(self) -> list[Type[Users]] | None:
         try:
