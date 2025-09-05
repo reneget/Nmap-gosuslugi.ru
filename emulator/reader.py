@@ -1,58 +1,58 @@
 #!/usr/bin/env python3
-from crypto import generate_key, generate_entropy
-import os
+import json
 
-SECRET_FILE = 'secret_key.txt'
-
-def load_secret_key():
-    if not os.path.exists(SECRET_FILE):
-        return None
+def send_to_handler(user_id, entropy, pwd):
+    """
+    Заглушка для отправки данных в другой обработчик
+    """
+    data = {
+        'id': user_id,
+        'entropy': entropy,
+        'pwd': pwd
+    }
     
-    try:
-        with open(SECRET_FILE, 'r') as f:
-            secret = f.read().strip()
-        if not secret:
-            return None
-        return secret
-    except:
-        return None
-
-
-def verify_key(input_key: str):
-    secret_key = load_secret_key()
-    if not secret_key:
-        return False
+    # Заглушка - просто выводим данные
+    print(f"Отправка в обработчик: {json.dumps(data, ensure_ascii=False)}")
     
-    expected_key = generate_key(secret_key, entropy)
+    # Здесь будет реальная отправка в другой обработчик
+    # Например, через HTTP запрос, очередь сообщений и т.д.
     
-    if input_key == expected_key:
-        
-        return True
-    
-    return False
+    # Заглушка - возвращаем True для демонстрации
+    return True
 
 def main():
-    # Первая проверка
-    first_key = input().strip()
-    if not first_key:
-        print("Доступ запрещен")
-        return
-    
-    # Вторая проверка
-    second_key = input().strip()
-    if not second_key:
-        print("Доступ запрещен")
-        return
-    
-    # Проверяем оба ключа
-    first_valid = verify_key(first_key)
-    second_valid = verify_key(second_key)
-    
-    # Доступ разрешен только если оба ключа верны
-    if first_valid and second_valid:
-        print("Доступ разрешен")
-    else:
-        print("Доступ запрещен")
+    try:
+        # Получаем ID пользователя
+        user_id = input("Введите ID пользователя: ").strip()
+        if not user_id:
+            print("Ошибка: ID пользователя не может быть пустым")
+            return
+        
+        # Получаем энтропию
+        entropy = input("Введите энтропию: ").strip()
+        if not entropy:
+            print("Ошибка: Энтропия не может быть пустой")
+            return
+        
+        # Получаем пароль
+        pwd = input("Введите пароль: ").strip()
+        if not pwd:
+            print("Ошибка: Пароль не может быть пустым")
+            return
+        
+        # Отправляем данные в обработчик
+        result = send_to_handler(user_id, entropy, pwd)
+        
+        # Проверяем результат от обработчика
+        if result:
+            print("Доступ разрешен")
+        else:
+            print("Доступ запрещен")
+            
+    except KeyboardInterrupt:
+        print("\nОперация прервана пользователем")
+    except Exception as e:
+        print(f"Ошибка: {e}")
 
 if __name__ == "__main__":
     main()
