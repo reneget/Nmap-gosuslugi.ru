@@ -18,6 +18,3 @@ main_log.info('FastAPI object initialized')
 main_log.info('Connecting routers')
 app.include_router(server_router)
 main_log.info('Routers are connected')
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -19,12 +19,13 @@ async def operation_emulation(user_properties: UserProperties):
 
         # params
         user_id = user_properties.user_id
-        secret_key = user_properties.key
+        unique_key = user_properties.key
         entropy = user_properties.entropy
 
         server_logger.info('Getting parameters for generation')
-        secret_key, is_active = Database.get_user_key_properties(user_id)
-        
+        properties = Database.get_user_key_properties(user_id)
+        secret_key, is_active = properties['secret_key'], properties['is_active'] 
+
         if is_active is None:
             return False
 
@@ -33,7 +34,7 @@ async def operation_emulation(user_properties: UserProperties):
         gen_key = Password.generated_new_key(secret_key, entropy)
         server_logger.info('Generate a key to check against the reader key')
         
-        check_keys = Password.key_verification(secret_key, gen_key)
+        check_keys = Password.key_verification(unique_key, gen_key[0])
         server_logger.info(f'status={check_keys}')
 
         return check_keys

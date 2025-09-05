@@ -10,7 +10,7 @@ class Database:
     @staticmethod
     def get_user_key_properties(user_id: int):
         func_logger.info(f'Getting a koluch from the base: {user_id}')
-        key = requests.get(f'http://127.0.0.1:8000/get/key/properties/user/{user_id}')
+        key = requests.get(f'http://localhost:8000/user/get/key/properties/user/{user_id}')
         func_logger.info('Key received')
         return key.json()
 
