@@ -16,9 +16,9 @@ class Database:
 
 class Password:
     @staticmethod
-    def key_verification(key: str, key_from_db: str) -> bool:
+    def key_verification(key: str, gen_key: str) -> bool:
         func_logger.info('Checking keys')
-        status = key == key_from_db
+        status = key == gen_key
         func_logger.info(f'status={status}')
         return status
     
