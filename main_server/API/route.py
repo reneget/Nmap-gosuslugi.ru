@@ -13,7 +13,7 @@ server_router = APIRouter(
     prefix='/server',
     tags=['server']
 )
-templates = Jinja2Templates(directory="/home/pivan/python-project/Nmap-gosuslugi.ru/main_server/front")
+templates = Jinja2Templates(directory="front")
 
 server_logger = logging.getLogger(__name__)
 
