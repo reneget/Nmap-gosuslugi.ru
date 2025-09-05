@@ -100,26 +100,30 @@
         </form>
     </div>
 
-    <script src="/static/api.js"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            
+
             try {
-                // Проверяем вход через API с передачей данных
-                const result = await api.adminLogin(username, password);
-                
-                if (result && result.success) {
-                    // Сохраняем информацию о входе
+                const response = await fetch('http://localhost:8001/server/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                if (data.success) {
                     localStorage.setItem('adminLoggedIn', 'true');
                     localStorage.setItem('adminUsername', username);
-                    
-                    // Переходим на панель управления
-                    window.location.href = 'admin_panel_api.html';
+                    window.location.href = '/server/admin';
                 } else {
-                    alert('Неверные данные для входа');
+                    alert(data.message || 'Неверные данные для входа');
                 }
             } catch (error) {
                 console.error('Ошибка входа:', error);

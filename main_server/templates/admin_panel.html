@@ -5,311 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель контроля доступа</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: black;
-            padding: 20px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: normal;
-        }
-
-        .logout-btn {
-            padding: 8px 16px;
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .logout-btn:hover {
-            background-color: #333;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-input {
-            width: 300px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #666;
-        }
-
-        .table-container {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ccc;
-        }
-
-        th {
-            background-color: #f5f5f5;
-            font-weight: normal;
-            font-size: 14px;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
-
-        .pagination button {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            background-color: white;
-            color: black;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .pagination button:hover {
-            background-color: #f5f5f5;
-        }
-
-        .pagination button.active {
-            background-color: black;
-            color: white;
-            border-color: black;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .page-info {
-            margin: 0 15px;
-            font-size: 14px;
-        }
-
-        .edit-btn {
-            padding: 6px 12px;
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .edit-btn:hover {
-            background-color: #333;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 80%;
-            max-width: 500px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: black;
-        }
-
-        .form-row {
-            margin-bottom: 15px;
-        }
-
-        .form-row label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .form-row input, .form-row select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .form-row input:focus, .form-row select:focus {
-            outline: none;
-            border-color: #666;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background-color: black;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #333;
-        }
-
-        .btn-secondary {
-            background-color: #ccc;
-            color: black;
-        }
-
-        .btn-secondary:hover {
-            background-color: #bbb;
-        }
-
-        .secret-field {
-            cursor: pointer;
-            user-select: none;
-            padding: 2px 4px;
-            border-radius: 3px;
-            transition: background-color 0.2s;
-        }
-
-        .secret-field:hover {
-            background-color: #f0f0f0;
-        }
-
-        .secret-field.revealed {
-            background-color: #e8f5e8;
-            font-family: monospace;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .confirm-modal {
-            display: none;
-            position: fixed;
-            z-index: 2;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-        }
-
-        .confirm-content {
-            background-color: white;
-            margin: 20% auto;
-            padding: 30px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .confirm-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #dc3545;
-        }
-
-        .confirm-message {
-            margin-bottom: 25px;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .confirm-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .confirm-actions .btn {
-            min-width: 100px;
-        }
+        /* Стили остаются без изменений, поэтому опущены для краткости */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: white; color: black; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ccc; }
+        .header h1 { font-size: 24px; font-weight: normal; }
+        .logout-btn { padding: 8px 16px; background-color: black; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .logout-btn:hover { background-color: #333; }
+        .search-container { margin-bottom: 20px; }
+        .search-input { width: 300px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .search-input:focus { outline: none; border-color: #666; }
+        .table-container { border: 1px solid #ccc; border-radius: 4px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ccc; }
+        th { background-color: #f5f5f5; font-weight: normal; font-size: 14px; }
+        tr:hover { background-color: #f9f9f9; }
+        .pagination { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px; }
+        .pagination button { padding: 8px 12px; border: 1px solid #ccc; background-color: white; color: black; cursor: pointer; border-radius: 4px; }
+        .pagination button:hover { background-color: #f5f5f5; }
+        .pagination button.active { background-color: black; color: white; border-color: black; }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-info { margin: 0 15px; font-size: 14px; }
+        .edit-btn { padding: 6px 12px; background-color: black; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .edit-btn:hover { background-color: #333; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: white; margin: 15% auto; padding: 20px; border: 1px solid #ccc; border-radius: 4px; width: 80%; max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }
+        .close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        .form-row { margin-bottom: 15px; }
+        .form-row label { display: block; margin-bottom: 5px; font-size: 14px; }
+        .form-row input, .form-row select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .form-row input:focus, .form-row select:focus { outline: none; border-color: #666; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background-color: black; color: white; }
+        .btn-primary:hover { background-color: #333; }
+        .btn-secondary { background-color: #ccc; color: black; }
+        .btn-secondary:hover { background-color: #bbb; }
+        .secret-field { cursor: pointer; user-select: none; padding: 2px 4px; border-radius: 3px; transition: background-color 0.2s; }
+        .secret-field:hover { background-color: #f0f0f0; }
+        .secret-field.revealed { background-color: #e8f5e8; font-family: monospace; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; }
+        .confirm-modal { display: none; position: fixed; z-index: 2; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+        .confirm-content { background-color: white; margin: 20% auto; padding: 30px; border: 1px solid #ccc; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .confirm-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #dc3545; }
+        .confirm-message { margin-bottom: 25px; color: #666; line-height: 1.5; }
+        .confirm-actions { display: flex; justify-content: center; gap: 15px; }
+        .confirm-actions .btn { min-width: 100px; }
     </style>
 </head>
 <body>
@@ -364,7 +108,7 @@
                     <label for="editRole">Роль</label>
                     <select id="editRole" name="role" required>
                         <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Гость</option>
+                        <option value="Гость">Гость</option>
                         <option value="Пользователь">Пользователь</option>
                     </select>
                 </div>
@@ -427,7 +171,7 @@
                     <label for="createRole">Роль</label>
                     <select id="createRole" name="role" required>
                         <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Гость</option>
+                        <option value="Гость">Гость</option>
                         <option value="Пользователь">Пользователь</option>
                     </select>
                 </div>
@@ -457,43 +201,35 @@
         </div>
     </div>
 
-    <script src="/static/api.js"></script>
     <script>
-        // Данные пользователей из API
         let users = [];
-
         let currentPage = 1;
         const usersPerPage = 10;
         let filteredUsers = [];
+        let editingUserId = null;
 
         // Проверка авторизации
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('adminLoggedIn');
             if (!isLoggedIn) {
-                window.location.href = 'admin_login.html';
+                window.location.href = '/server/admin/login';
                 return false;
             }
             return true;
         }
 
-        // Загрузка пользователей из API
+        // Загрузка пользователей
         async function loadUsers() {
             try {
-                const response = await api.getAllUsers();
-                users = response.map(user => ({
-                    id: user.user_id,
-                    fio: user.full_name,
-                    role: user.position,
-                    secret: user.secret_key,
-                    date: new Date(user.create_time).toLocaleDateString('ru-RU'),
-                    endDate: user.kill_time ? new Date(user.kill_time).toLocaleDateString('ru-RU') : 'Не указано',
-                    active: user.is_active
-                }));
+                const response = await fetch('http://localhost:8000/user/get/all/users');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                users = await response.json();
                 filteredUsers = [...users];
                 displayUsers();
             } catch (error) {
                 console.error('Ошибка загрузки пользователей:', error);
-                // Показываем сообщение об ошибке
                 document.getElementById('tableBody').innerHTML = 
                     '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки данных</td></tr>';
             }
@@ -509,15 +245,15 @@
             pageUsers.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.fio}</td>
-                    <td>${user.role}</td>
-                    <td><span class="secret-field" onclick="toggleSecret(this, '${user.secret}')">${'*'.repeat(user.secret.length)}</span></td>
-                    <td>${user.date}</td>
-                    <td>${user.endDate}</td>
-                    <td>${user.active ? 'Да' : 'Нет'}</td>
+                    <td>${user.user_id}</td>
+                    <td>${user.full_name}</td>
+                    <td>${user.position}</td>
+                    <td><span class="secret-field" onclick="toggleSecret(this, '${user.secret_key}')">${'*'.repeat(user.secret_key.length)}</span></td>
+                    <td>${new Date(user.create_time).toLocaleDateString('ru-RU')}</td>
+                    <td>${user.kill_time ? new Date(user.kill_time).toLocaleDateString('ru-RU') : 'Не указано'}</td>
+                    <td>${user.is_active ? 'Да' : 'Нет'}</td>
                     <td>
-                        <button class="edit-btn" onclick="editUser(${user.id})">Редактировать</button>
+                        <button class="edit-btn" onclick="editUser(${user.user_id})">Редактировать</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
@@ -555,9 +291,9 @@
         function filterTable() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             filteredUsers = users.filter(user => 
-                user.fio.toLowerCase().includes(searchTerm) ||
-                user.role.toLowerCase().includes(searchTerm) ||
-                user.secret.toLowerCase().includes(searchTerm)
+                user.full_name.toLowerCase().includes(searchTerm) ||
+                user.position.toLowerCase().includes(searchTerm) ||
+                user.secret_key.toLowerCase().includes(searchTerm)
             );
             currentPage = 1;
             displayUsers();
@@ -567,21 +303,19 @@
             if (confirm('Вы уверены, что хотите выйти?')) {
                 localStorage.removeItem('adminLoggedIn');
                 localStorage.removeItem('adminUsername');
-                window.location.href = 'admin_login.html';
+                window.location.href = '/server/admin/login';
             }
         }
 
-        let editingUserId = null;
-
         function editUser(userId) {
             editingUserId = userId;
-            const user = users.find(u => u.id === userId);
+            const user = users.find(u => u.user_id === userId);
             if (user) {
-                document.getElementById('editFio').value = user.fio;
-                document.getElementById('editRole').value = user.role;
-                document.getElementById('editSecret').value = user.secret;
-                document.getElementById('editEndDate').value = user.endDate;
-                document.getElementById('editActive').value = user.active.toString();
+                document.getElementById('editFio').value = user.full_name;
+                document.getElementById('editRole').value = user.position;
+                document.getElementById('editSecret').value = user.secret_key;
+                document.getElementById('editEndDate').value = user.kill_time ? new Date(user.kill_time).toISOString().split('T')[0] : '';
+                document.getElementById('editActive').value = user.is_active.toString();
                 document.getElementById('editModal').style.display = 'block';
             }
         }
@@ -630,9 +364,9 @@
 
         function deleteUser() {
             if (editingUserId) {
-                const user = users.find(u => u.id === editingUserId);
+                const user = users.find(u => u.user_id === editingUserId);
                 if (user) {
-                    document.getElementById('deleteUserName').textContent = user.fio;
+                    document.getElementById('deleteUserName').textContent = user.full_name;
                     document.getElementById('confirmModal').style.display = 'block';
                 }
             }
@@ -645,10 +379,13 @@
         async function confirmDelete() {
             if (editingUserId) {
                 try {
-                    await api.deleteUser(editingUserId);
-                    
-                    // Перезагружаем список пользователей
-                    await loadUsers();
+                    const response = await fetch(`http://localhost:8000/user/delete/user/${editingUserId}`, {
+                        method: 'DELETE'
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    await loadUsers(); // Перезагрузка списка
                     closeModal();
                     closeConfirmModal();
                 } catch (error) {
@@ -660,19 +397,24 @@
 
         document.getElementById('editForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             if (editingUserId) {
                 try {
                     const updateData = {
                         full_name: document.getElementById('editFio').value,
                         position: document.getElementById('editRole').value,
+                        secret_key: document.getElementById('editSecret').value,
+                        kill_time: document.getElementById('editEndDate').value,
                         is_active: document.getElementById('editActive').value === 'true'
                     };
-
-                    await api.updateUser(editingUserId, updateData);
-                    
-                    // Перезагружаем список пользователей
-                    await loadUsers();
+                    const response = await fetch(`http://localhost:8000/user/update/user/${editingUserId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updateData)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    await loadUsers(); // Перезагрузка списка
                     closeModal();
                 } catch (error) {
                     console.error('Ошибка обновления пользователя:', error);
@@ -683,7 +425,6 @@
 
         document.getElementById('createForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             try {
                 const newUserData = {
                     full_name: document.getElementById('createFio').value,
@@ -692,11 +433,15 @@
                     kill_time: document.getElementById('createEndDate').value,
                     is_active: document.getElementById('createActive').value === 'true'
                 };
-                
-                await api.createUser(newUserData);
-                
-                // Перезагружаем список пользователей
-                await loadUsers();
+                const response = await fetch('http://localhost:8000/user/create/user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newUserData)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                await loadUsers(); // Перезагрузка списка
                 closeCreateModal();
             } catch (error) {
                 console.error('Ошибка создания пользователя:', error);
@@ -706,20 +451,12 @@
 
         window.onclick = function(event) {
             const modal = document.getElementById('editModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-            
+            if (event.target === modal) closeModal();
             const createModal = document.getElementById('createModal');
-            if (event.target === createModal) {
-                closeCreateModal();
-            }
-            
+            if (event.target === createModal) closeCreateModal();
             const confirmModal = document.getElementById('confirmModal');
-            if (event.target === confirmModal) {
-                closeConfirmModal();
-            }
-        }
+            if (event.target === confirmModal) closeConfirmModal();
+        };
 
         // Инициализация при загрузке страницы
         if (checkAuth()) {

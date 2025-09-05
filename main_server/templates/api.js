@@ -4,7 +4,6 @@ class API {
         this.databaseUrl = 'http://localhost:8000'; // database API
         this.mainServerUrl = 'http://localhost:8001'; // main_server API
     }
-    
 
     // Database API методы
     async getAllUsers() {
@@ -145,5 +144,6 @@ class API {
         }
     }
 }
+
 // Создаем глобальный экземпляр API
 window.api = new API();
