@@ -333,7 +333,7 @@
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('adminLoggedIn');
             if (!isLoggedIn) {
-                window.location.href = 'admin_login.html';
+                window.location.href = 'admin/login';
                 return false;
             }
             return true;
@@ -474,7 +474,7 @@
             if (confirm('Вы уверены, что хотите выйти?')) {
                 localStorage.removeItem('adminLoggedIn');
                 localStorage.removeItem('adminUsername');
-                window.location.href = 'admin_login.html';
+                window.location.href = 'admin/login';
             }
         }
 
