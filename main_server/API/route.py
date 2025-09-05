@@ -1,4 +1,6 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 import logging
 
@@ -9,6 +11,7 @@ server_router = APIRouter(
     prefix='/server',
     tags=['server']
 )
+templates = Jinja2Templates(directory="front")
 
 server_logger = logging.getLogger(__name__)
 
@@ -41,6 +44,10 @@ async def operation_emulation(user_properties: UserProperties):
     except:
         server_logger.error('Error checking key', exc_info=True)
 
-@server_router.get('/admin/login')
-async def admin_login():
-    pass
+@server_router.get('/admin/login', response_class=HTMLResponse)
+async def admin_login(request: Request):
+    return templates.TemplateResponse("admin_login.html", {"request": request})
+
+@server_router.get('/admin', response_class=HTMLResponse)
+async def admin_login(request: Request):
+    return templates.TemplateResponse("admin_panel.html", {"request": request})
