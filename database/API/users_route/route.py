@@ -19,9 +19,6 @@ user_router = APIRouter(
 async def create_user_route(user: pd_md.User_create, db: Session = Depends(get_db)):
     """
     Api router what creating new User
-    :param user:
-    :param db:
-    :return:
     """
     try:
         user_logger.info('Request to create a new employee')
@@ -65,7 +62,7 @@ async def get_user_by_id_api(user_id: int, db: Session = Depends(get_db)):
 async def get_user_properties_key_api(user_id: int, db: Session = Depends(get_db)):
     try:
         user_logger.info(f'Request to get user unique key: user_id={user_id}')
-        secret_key = UserRepo(db).get_user_key_properties(user_id)
+        secret_key, is_active = UserRepo(db).get_user_key_properties(user_id)
         user_logger.info('User unique key received')
 
         if secret_key is None:
@@ -74,7 +71,7 @@ async def get_user_properties_key_api(user_id: int, db: Session = Depends(get_db
                 detail='User not found'
             )
 
-        return {'secret_key': secret_key}
+        return {'secret_key': secret_key, 'is_active': is_active}
     except HTTPException:
         user_logger.error('Error getting user unique key', exc_info=True)
         raise
