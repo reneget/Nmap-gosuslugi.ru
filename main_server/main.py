@@ -3,7 +3,7 @@ import uvicorn
 
 import logging
 
-from .API import server_router
+from API import server_router
 from log import config
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)

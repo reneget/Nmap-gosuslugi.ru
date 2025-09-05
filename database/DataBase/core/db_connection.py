@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
@@ -27,6 +28,9 @@ def get_db():
         db_logger.info(f'DataBase connection session has been created')
         yield db
 
+    except HTTPException:
+        db_logger.error(f'DataBase connection went wrong', exc_info=True)
+        raise
     except Exception as e:
         db_logger.error(f'DataBase connection went wrong', exc_info=True)
     finally:

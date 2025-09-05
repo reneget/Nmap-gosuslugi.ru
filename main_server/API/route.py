@@ -3,10 +3,10 @@ from fastapi import APIRouter, status, HTTPException
 import logging
 
 from .pydantic import UserProperties
-from ..functions import Password, Database
+from functions import Password, Database
 
 server_router = APIRouter(
-    '/server',
+    prefix='/server',
     tags=['server']
 )
 
@@ -19,16 +19,21 @@ async def operation_emulation(user_properties: UserProperties):
 
         # params
         user_id = user_properties.user_id
-        unique_key = user_properties.key
+        secret_key = user_properties.key
+        entropy = user_properties.entropy
 
         server_logger.info('Getting parameters for generation')
-        secret_key, counter = Database.get_user_key_properties(user_id)
+        secret_key, is_active = Database.get_user_key_properties(user_id)
+        
+        if is_active is None:
+            return False
+
         server_logger.info('Parameters received')
 
-        gen_key = Password.generated_new_key(secret_key, counter)
+        gen_key = Password.generated_new_key(secret_key, entropy)
         server_logger.info('Generate a key to check against the reader key')
         
-        check_keys = Password.key_verification(unique_key, gen_key)
+        check_keys = Password.key_verification(secret_key, gen_key)
         server_logger.info(f'status={check_keys}')
 
         return check_keys

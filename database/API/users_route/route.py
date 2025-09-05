@@ -41,6 +41,7 @@ async def get_user_by_id_api(user_id: int, db: Session = Depends(get_db)):
         user = UserRepo(db).get_user_by_id(user_id)
         user_logger.info('User received')
         user_logger.debug(repr(user))
+        print(user)
 
         if user is None:
             raise HTTPException(
