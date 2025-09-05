@@ -358,30 +358,30 @@
             <form id="editForm">
                 <div class="form-row">
                     <label for="editFio">ФИО</label>
-                    <input type="text" id="editFio" name="fio" required>
+                    <input type="text" id="editFio" name="full_name" required>
                 </div>
                 <div class="form-row">
                     <label for="editRole">Роль</label>
-                    <select id="editRole" name="role" required>
+                    <select id="editRole" name="position" required>
                         <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Гость</option>
+                        <option value="Модератор">Модератор</option>
                         <option value="Пользователь">Пользователь</option>
                     </select>
                 </div>
                 <div class="form-row">
                     <label for="editSecret">Секрет</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="editSecret" name="secret" required style="flex: 1;">
+                        <input type="text" id="editSecret" name="secret_key" required style="flex: 1;">
                         <button type="button" class="btn btn-secondary" onclick="generateEditSecret()" style="white-space: nowrap;">Сгенерировать</button>
                     </div>
                 </div>
                 <div class="form-row">
                     <label for="editEndDate">Окончание</label>
-                    <input type="date" id="editEndDate" name="endDate" required>
+                    <input type="date" id="editEndDate" name="kill_time" required>
                 </div>
                 <div class="form-row">
                     <label for="editActive">Доступ</label>
-                    <select id="editActive" name="active" required>
+                    <select id="editActive" name="is_active" required>
                         <option value="true">Да</option>
                         <option value="false">Нет</option>
                     </select>
@@ -421,30 +421,30 @@
             <form id="createForm">
                 <div class="form-row">
                     <label for="createFio">ФИО</label>
-                    <input type="text" id="createFio" name="fio" required>
+                    <input type="text" id="createFio" name="full_name" required>
                 </div>
                 <div class="form-row">
                     <label for="createRole">Роль</label>
-                    <select id="createRole" name="role" required>
+                    <select id="createRole" name="position" required>
                         <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Гость</option>
+                        <option value="Модератор">Модератор</option>
                         <option value="Пользователь">Пользователь</option>
                     </select>
                 </div>
                 <div class="form-row">
                     <label for="createSecret">Секрет</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="createSecret" name="secret" required style="flex: 1;">
+                        <input type="text" id="createSecret" name="secret_key" required style="flex: 1;">
                         <button type="button" class="btn btn-secondary" onclick="generateSecret()" style="white-space: nowrap;">Сгенерировать</button>
                     </div>
                 </div>
                 <div class="form-row">
                     <label for="createEndDate">Окончание</label>
-                    <input type="date" id="createEndDate" name="endDate" required>
+                    <input type="date" id="createEndDate" name="kill_time" required>
                 </div>
                 <div class="form-row">
                     <label for="createActive">Доступ</label>
-                    <select id="createActive" name="active" required>
+                    <select id="createActive" name="is_active" required>
                         <option value="true">Да</option>
                         <option value="false">Нет</option>
                     </select>
@@ -458,28 +458,23 @@
     </div>
 
     <script>
-        // Тестовые данные
-        const users = [
-            { id: 1, fio: "Иванов Иван Иванович", role: "Администратор", secret: "secret123", date: "2025-01-15", endDate: "2026-01-15", active: true },
-            { id: 2, fio: "Петров Петр Петрович", role: "Модератор", secret: "secret456", date: "2025-01-16", endDate: "2026-01-16", active: true },
-            { id: 3, fio: "Сидоров Сидор Сидорович", role: "Пользователь", secret: "secret789", date: "2025-01-17", endDate: "2026-01-17", active: false },
-            { id: 4, fio: "Козлов Козел Козлович", role: "Администратор", secret: "secret101", date: "2025-01-18", endDate: "2026-01-18", active: true },
-            { id: 5, fio: "Волков Волк Волкович", role: "Модератор", secret: "secret202", date: "2025-01-19", endDate: "2026-01-19", active: true },
-            { id: 6, fio: "Медведев Медведь Медведевич", role: "Пользователь", secret: "secret303", date: "2025-01-20", endDate: "2026-01-20", active: false },
-            { id: 7, fio: "Лисов Лис Лисович", role: "Администратор", secret: "secret404", date: "2025-01-21", endDate: "2026-01-21", active: true },
-            { id: 8, fio: "Зайцев Заяц Зайцевич", role: "Модератор", secret: "secret505", date: "2025-01-22", endDate: "2026-01-22", active: true },
-            { id: 9, fio: "Белов Бел Белович", role: "Пользователь", secret: "secret606", date: "2025-01-23", endDate: "2026-01-23", active: true },
-            { id: 10, fio: "Чернов Черн Чернович", role: "Администратор", secret: "secret707", date: "2025-01-24", endDate: "2026-01-24", active: false },
-            { id: 11, fio: "Краснов Красн Краснович", role: "Модератор", secret: "secret808", date: "2025-01-25", endDate: "2026-01-25", active: true },
-            { id: 12, fio: "Желтов Желт Желтович", role: "Пользователь", secret: "secret909", date: "2025-01-26", endDate: "2026-01-26", active: true },
-            { id: 13, fio: "Синева Синий Синевич", role: "Администратор", secret: "secret110", date: "2025-01-27", endDate: "2026-01-27", active: true },
-            { id: 14, fio: "Зеленов Зелен Зеленович", role: "Модератор", secret: "secret220", date: "2025-01-28", endDate: "2026-01-28", active: false },
-            { id: 15, fio: "Оранжев Оранж Оранжевич", role: "Пользователь", secret: "secret330", date: "2025-01-29", endDate: "2026-01-29", active: true }
-        ];
-
         let currentPage = 1;
         const usersPerPage = 10;
-        let filteredUsers = [...users];
+        let filteredUsers = [];
+
+        const API_URL = 'http://localhost:8000';
+
+        async function fetchUsers() {
+            try {
+                const response = await fetch(`${API_URL}/server/user/get/all/users`);
+                if (!response.ok) throw new Error(await response.json());
+                filteredUsers = await response.json();
+                displayUsers();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert(error.message || 'Не удалось загрузить пользователей');
+            }
+        }
 
         function displayUsers() {
             const tableBody = document.getElementById('tableBody');
@@ -491,15 +486,15 @@
             pageUsers.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.fio}</td>
-                    <td>${user.role}</td>
-                    <td><span class="secret-field" onclick="toggleSecret(this, '${user.secret}')">${'*'.repeat(user.secret.length)}</span></td>
-                    <td>${user.date}</td>
-                    <td>${user.endDate}</td>
-                    <td>${user.active ? 'Да' : 'Нет'}</td>
+                    <td>${user.user_id}</td>
+                    <td>${user.full_name}</td>
+                    <td>${user.position}</td>
+                    <td><span class="secret-field" onclick="toggleSecret(this, '${user.secret_key}')">${'*'.repeat(user.secret_key.length)}</span></td>
+                    <td>${new Date(user.create_time).toISOString().split('T')[0]}</td>
+                    <td>${user.kill_time ? new Date(user.kill_time).toISOString().split('T')[0] : ''}</td>
+                    <td>${user.is_active ? 'Да' : 'Нет'}</td>
                     <td>
-                        <button class="edit-btn" onclick="editUser(${user.id})">Редактировать</button>
+                        <button class="edit-btn" onclick="editUser(${user.user_id})">Редактировать</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
@@ -536,10 +531,10 @@
 
         function filterTable() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            filteredUsers = users.filter(user => 
-                user.fio.toLowerCase().includes(searchTerm) ||
-                user.role.toLowerCase().includes(searchTerm) ||
-                user.secret.toLowerCase().includes(searchTerm)
+            filteredUsers = filteredUsers.filter(user =>
+                user.full_name.toLowerCase().includes(searchTerm) ||
+                user.position.toLowerCase().includes(searchTerm) ||
+                user.secret_key.toLowerCase().includes(searchTerm)
             );
             currentPage = 1;
             displayUsers();
@@ -547,22 +542,28 @@
 
         function logout() {
             if (confirm('Вы уверены, что хотите выйти?')) {
-                window.location.href = 'admin_login.html';
+                document.cookie = 'access_token=; Max-Age=0; path=/';
+                window.location.href = '/server/admin/login';
             }
         }
 
         let editingUserId = null;
 
-        function editUser(userId) {
+        async function editUser(userId) {
             editingUserId = userId;
-            const user = users.find(u => u.id === userId);
-            if (user) {
-                document.getElementById('editFio').value = user.fio;
-                document.getElementById('editRole').value = user.role;
-                document.getElementById('editSecret').value = user.secret;
-                document.getElementById('editEndDate').value = user.endDate;
-                document.getElementById('editActive').value = user.active.toString();
+            try {
+                const response = await fetch(`${API_URL}/server/user/get/user/${userId}`);
+                if (!response.ok) throw new Error(await response.json());
+                const user = await response.json();
+                document.getElementById('editFio').value = user.full_name;
+                document.getElementById('editRole').value = user.position;
+                document.getElementById('editSecret').value = user.secret_key;
+                document.getElementById('editEndDate').value = user.kill_time ? new Date(user.kill_time).toISOString().split('T')[0] : '';
+                document.getElementById('editActive').value = user.is_active.toString();
                 document.getElementById('editModal').style.display = 'block';
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert(error.message || 'Не удалось загрузить данные пользователя');
             }
         }
 
@@ -610,9 +611,9 @@
 
         function deleteUser() {
             if (editingUserId) {
-                const user = users.find(u => u.id === editingUserId);
+                const user = filteredUsers.find(u => u.user_id === editingUserId);
                 if (user) {
-                    document.getElementById('deleteUserName').textContent = user.fio;
+                    document.getElementById('deleteUserName').textContent = user.full_name;
                     document.getElementById('confirmModal').style.display = 'block';
                 }
             }
@@ -622,52 +623,81 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
-        function confirmDelete() {
+        async function confirmDelete() {
             if (editingUserId) {
-                const userIndex = users.findIndex(u => u.id === editingUserId);
-                if (userIndex !== -1) {
-                    users.splice(userIndex, 1);
-                    filterTable();
+                try {
+                    const response = await fetch(`${API_URL}/server/user/delete/user/${editingUserId}`, {
+                        method: 'DELETE'
+                    });
+                    if (!response.ok) throw new Error(await response.json());
+                    await fetchUsers();
                     closeModal();
                     closeConfirmModal();
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert(error.message || 'Не удалось удалить пользователя');
                 }
             }
         }
 
-        document.getElementById('editForm').addEventListener('submit', function(e) {
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             if (editingUserId) {
-                const userIndex = users.findIndex(u => u.id === editingUserId);
-                if (userIndex !== -1) {
-                    users[userIndex].fio = document.getElementById('editFio').value;
-                    users[userIndex].role = document.getElementById('editRole').value;
-                    users[userIndex].secret = document.getElementById('editSecret').value;
-                    users[userIndex].endDate = document.getElementById('editEndDate').value;
-                    users[userIndex].active = document.getElementById('editActive').value === 'true';
-                    
-                    filterTable();
+                const updatedUser = {
+                    user_id: editingUserId,
+                    full_name: document.getElementById('editFio').value,
+                    position: document.getElementById('editRole').value,
+                    secret_key: document.getElementById('editSecret').value,
+                    kill_time: document.getElementById('editEndDate').value || null,
+                    is_active: document.getElementById('editActive').value === 'true'
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/server/user/update/user/${editingUserId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedUser)
+                    });
+                    if (!response.ok) throw new Error(await response.json());
+                    await fetchUsers();
                     closeModal();
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert(error.message || 'Не удалось обновить пользователя');
                 }
             }
         });
 
-        document.getElementById('createForm').addEventListener('submit', function(e) {
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const newUser = {
-                id: users.length + 1,
-                fio: document.getElementById('createFio').value,
-                role: document.getElementById('createRole').value,
-                secret: document.getElementById('createSecret').value,
-                date: new Date().toISOString().split('T')[0],
-                endDate: document.getElementById('createEndDate').value,
-                active: document.getElementById('createActive').value === 'true'
+                full_name: document.getElementById('createFio').value,
+                position: document.getElementById('createRole').value,
+                secret_key: document.getElementById('createSecret').value,
+                create_time: new Date().toISOString(),
+                kill_time: document.getElementById('createEndDate').value || null,
+                is_active: document.getElementById('createActive').value === 'true'
             };
-            
-            users.push(newUser);
-            filterTable();
-            closeCreateModal();
+
+            try {
+                const response = await fetch(`${API_URL}/server/user/create/user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newUser)
+                });
+                if (!response.ok) throw new Error(await response.json());
+                await fetchUsers();
+                closeCreateModal();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert(error.message || 'Не удалось создать пользователя');
+            }
         });
 
         window.onclick = function(event) {
@@ -685,9 +715,17 @@
             if (event.target === confirmModal) {
                 closeConfirmModal();
             }
-        }
+        };
 
-        displayUsers();
+        // Проверка авторизации и загрузка пользователей
+        window.addEventListener('load', async () => {
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
+            if (!token) {
+                window.location.href = '/server/admin/login';
+                return;
+            }
+            await fetchUsers();
+        });
     </script>
 </body>
 </html>
