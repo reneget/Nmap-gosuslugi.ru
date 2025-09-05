@@ -122,9 +122,18 @@ class API {
         }
     }
 
-    async adminLogin() {
+    async adminLogin(username, password) {
         try {
-            const response = await fetch(`${this.mainServerUrl}/server/admin/login`);
+            const response = await fetch(`${this.mainServerUrl}/server/admin/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

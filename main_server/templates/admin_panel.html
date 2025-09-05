@@ -457,7 +457,7 @@
         </div>
     </div>
 
-    <script href="/static/api.js"></script>
+    <script src="/static/api.js"></script>
     <script>
         // Данные пользователей из API
         let users = [];
@@ -466,18 +466,28 @@
         const usersPerPage = 10;
         let filteredUsers = [];
 
+        // Проверка авторизации
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = 'admin_login.html';
+                return false;
+            }
+            return true;
+        }
+
         // Загрузка пользователей из API
         async function loadUsers() {
             try {
                 const response = await api.getAllUsers();
                 users = response.map(user => ({
-                    user_id: user.user_id,
-                    full_name: user.full_name,
-                    position: user.position,
-                    secret_key: user.secret_key,
-                    create_date: new Date(user.create_time).toLocaleDateString('ru-RU'),
-                    kill_data: user.kill_time ? new Date(user.kill_time).toLocaleDateString('ru-RU') : 'Не указано',
-                    is_active: user.is_active
+                    id: user.user_id,
+                    fio: user.full_name,
+                    role: user.position,
+                    secret: user.secret_key,
+                    date: new Date(user.create_time).toLocaleDateString('ru-RU'),
+                    endDate: user.kill_time ? new Date(user.kill_time).toLocaleDateString('ru-RU') : 'Не указано',
+                    active: user.is_active
                 }));
                 filteredUsers = [...users];
                 displayUsers();
@@ -555,6 +565,8 @@
 
         function logout() {
             if (confirm('Вы уверены, что хотите выйти?')) {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('adminUsername');
                 window.location.href = 'admin_login.html';
             }
         }
@@ -630,14 +642,18 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
-        function confirmDelete() {
+        async function confirmDelete() {
             if (editingUserId) {
-                const userIndex = users.findIndex(u => u.id === editingUserId);
-                if (userIndex !== -1) {
-                    users.splice(userIndex, 1);
-                    filterTable();
+                try {
+                    await api.deleteUser(editingUserId);
+                    
+                    // Перезагружаем список пользователей
+                    await loadUsers();
                     closeModal();
                     closeConfirmModal();
+                } catch (error) {
+                    console.error('Ошибка удаления пользователя:', error);
+                    alert('Ошибка при удалении пользователя');
                 }
             }
         }
@@ -655,16 +671,8 @@
 
                     await api.updateUser(editingUserId, updateData);
                     
-                    // Обновляем локальные данные
-                    const userIndex = users.findIndex(u => u.id === editingUserId);
-                    if (userIndex !== -1) {
-                        users[userIndex].fio = updateData.full_name;
-                        users[userIndex].role = updateData.position;
-                        users[userIndex].active = updateData.is_active;
-                    }
-                    
-                    // Обновляем отображение
-                    filterTable();
+                    // Перезагружаем список пользователей
+                    await loadUsers();
                     closeModal();
                 } catch (error) {
                     console.error('Ошибка обновления пользователя:', error);
@@ -673,22 +681,27 @@
             }
         });
 
-        document.getElementById('createForm').addEventListener('submit', function(e) {
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const newUser = {
-                id: users.length + 1,
-                fio: document.getElementById('createFio').value,
-                role: document.getElementById('createRole').value,
-                secret: document.getElementById('createSecret').value,
-                date: new Date().toISOString().split('T')[0],
-                endDate: document.getElementById('createEndDate').value,
-                active: document.getElementById('createActive').value === 'true'
-            };
-            
-            users.push(newUser);
-            filterTable();
-            closeCreateModal();
+            try {
+                const newUserData = {
+                    full_name: document.getElementById('createFio').value,
+                    position: document.getElementById('createRole').value,
+                    secret_key: document.getElementById('createSecret').value,
+                    kill_time: document.getElementById('createEndDate').value,
+                    is_active: document.getElementById('createActive').value === 'true'
+                };
+                
+                await api.createUser(newUserData);
+                
+                // Перезагружаем список пользователей
+                await loadUsers();
+                closeCreateModal();
+            } catch (error) {
+                console.error('Ошибка создания пользователя:', error);
+                alert('Ошибка при создании пользователя');
+            }
         });
 
         window.onclick = function(event) {
@@ -709,7 +722,9 @@
         }
 
         // Инициализация при загрузке страницы
-        loadUsers();
+        if (checkAuth()) {
+            loadUsers();
+        }
     </script>
 </body>
 </html>
