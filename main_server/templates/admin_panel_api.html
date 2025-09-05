@@ -239,76 +239,16 @@
             background-color: #bbb;
         }
 
-        .secret-field {
-            cursor: pointer;
-            user-select: none;
-            padding: 2px 4px;
-            border-radius: 3px;
-            transition: background-color 0.2s;
-        }
-
-        .secret-field:hover {
-            background-color: #f0f0f0;
-        }
-
-        .secret-field.revealed {
-            background-color: #e8f5e8;
-            font-family: monospace;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .confirm-modal {
-            display: none;
-            position: fixed;
-            z-index: 2;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-        }
-
-        .confirm-content {
-            background-color: white;
-            margin: 20% auto;
-            padding: 30px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
+        .loading {
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .confirm-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #dc3545;
-        }
-
-        .confirm-message {
-            margin-bottom: 25px;
+            padding: 20px;
             color: #666;
-            line-height: 1.5;
         }
 
-        .confirm-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .confirm-actions .btn {
-            min-width: 100px;
+        .error {
+            color: red;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
@@ -320,7 +260,6 @@
 
     <div class="search-container">
         <input type="text" class="search-input" id="searchInput" placeholder="Поиск по ФИО, роли или secret..." onkeyup="filterTable()">
-        <button class="btn btn-primary" onclick="createUser()" style="margin-left: 10px;">Создать пользователя</button>
     </div>
 
     <div class="table-container">
@@ -330,14 +269,16 @@
                     <th>ID</th>
                     <th>ФИО</th>
                     <th>Роль</th>
-                    <th>Секрет</th>
-                    <th>Создан</th>
-                    <th>Окончание</th>
-                    <th>Доступ</th>
+                    <th>Secret</th>
+                    <th>Дата создания</th>
+                    <th>Активен</th>
                     <th>Действия</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
+                <tr>
+                    <td colspan="7" class="loading">Загрузка данных...</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -358,36 +299,20 @@
             <form id="editForm">
                 <div class="form-row">
                     <label for="editFio">ФИО</label>
-                    <input type="text" id="editFio" name="fio" required>
+                    <input type="text" id="editFio" name="full_name" required>
                 </div>
                 <div class="form-row">
                     <label for="editRole">Роль</label>
-                    <select id="editRole" name="role" required>
-                        <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Гость</option>
-                        <option value="Пользователь">Пользователь</option>
-                    </select>
+                    <input type="text" id="editRole" name="position" required>
                 </div>
                 <div class="form-row">
-                    <label for="editSecret">Секрет</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="editSecret" name="secret" required style="flex: 1;">
-                        <button type="button" class="btn btn-secondary" onclick="generateEditSecret()" style="white-space: nowrap;">Сгенерировать</button>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label for="editEndDate">Окончание</label>
-                    <input type="date" id="editEndDate" name="endDate" required>
-                </div>
-                <div class="form-row">
-                    <label for="editActive">Доступ</label>
-                    <select id="editActive" name="active" required>
+                    <label for="editActive">Активен</label>
+                    <select id="editActive" name="is_active" required>
                         <option value="true">Да</option>
                         <option value="false">Нет</option>
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-danger" onclick="deleteUser()" style="margin-right: auto;">Удалить</button>
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
                 </div>
@@ -395,76 +320,24 @@
         </div>
     </div>
 
-    <!-- Модальное окно подтверждения удаления -->
-    <div id="confirmModal" class="confirm-modal">
-        <div class="confirm-content">
-            <div class="confirm-title">Подтверждение удаления</div>
-            <div class="confirm-message">
-                Вы действительно хотите удалить пользователя<br>
-                <strong id="deleteUserName"></strong>?<br><br>
-                Это действие нельзя отменить.
-            </div>
-            <div class="confirm-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Отмена</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Удалить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно создания пользователя -->
-    <div id="createModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Создать пользователя</h2>
-                <span class="close" onclick="closeCreateModal()">&times;</span>
-            </div>
-            <form id="createForm">
-                <div class="form-row">
-                    <label for="createFio">ФИО</label>
-                    <input type="text" id="createFio" name="fio" required>
-                </div>
-                <div class="form-row">
-                    <label for="createRole">Роль</label>
-                    <select id="createRole" name="role" required>
-                        <option value="Администратор">Администратор</option>
-                        <option value="Модератор">Гость</option>
-                        <option value="Пользователь">Пользователь</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <label for="createSecret">Секрет</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="createSecret" name="secret" required style="flex: 1;">
-                        <button type="button" class="btn btn-secondary" onclick="generateSecret()" style="white-space: nowrap;">Сгенерировать</button>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label for="createEndDate">Окончание</label>
-                    <input type="date" id="createEndDate" name="endDate" required>
-                </div>
-                <div class="form-row">
-                    <label for="createActive">Доступ</label>
-                    <select id="createActive" name="active" required>
-                        <option value="true">Да</option>
-                        <option value="false">Нет</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Отмена</button>
-                    <button type="submit" class="btn btn-primary">Создать</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="api.js"></script>
+    <script src="/static/api.js"></script>
     <script>
         // Данные пользователей из API
         let users = [];
-
         let currentPage = 1;
         const usersPerPage = 10;
         let filteredUsers = [];
+        let editingUserId = null;
+
+        // Проверка авторизации
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = 'admin_login.html';
+                return false;
+            }
+            return true;
+        }
 
         // Загрузка пользователей из API
         async function loadUsers() {
@@ -476,16 +349,14 @@
                     role: user.position,
                     secret: user.secret_key,
                     date: new Date(user.create_time).toLocaleDateString('ru-RU'),
-                    endDate: user.kill_time ? new Date(user.kill_time).toLocaleDateString('ru-RU') : 'Не указано',
                     active: user.is_active
                 }));
                 filteredUsers = [...users];
                 displayUsers();
             } catch (error) {
                 console.error('Ошибка загрузки пользователей:', error);
-                // Показываем сообщение об ошибке
                 document.getElementById('tableBody').innerHTML = 
-                    '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки данных</td></tr>';
+                    '<tr><td colspan="7" class="error">Ошибка загрузки данных</td></tr>';
             }
         }
 
@@ -502,9 +373,8 @@
                     <td>${user.id}</td>
                     <td>${user.fio}</td>
                     <td>${user.role}</td>
-                    <td><span class="secret-field" onclick="toggleSecret(this, '${user.secret}')">${'*'.repeat(user.secret.length)}</span></td>
+                    <td>${user.secret}</td>
                     <td>${user.date}</td>
-                    <td>${user.endDate}</td>
                     <td>${user.active ? 'Да' : 'Нет'}</td>
                     <td>
                         <button class="edit-btn" onclick="editUser(${user.id})">Редактировать</button>
@@ -553,22 +423,12 @@
             displayUsers();
         }
 
-        function logout() {
-            if (confirm('Вы уверены, что хотите выйти?')) {
-                window.location.href = 'admin_login.html';
-            }
-        }
-
-        let editingUserId = null;
-
         function editUser(userId) {
             editingUserId = userId;
             const user = users.find(u => u.id === userId);
             if (user) {
                 document.getElementById('editFio').value = user.fio;
                 document.getElementById('editRole').value = user.role;
-                document.getElementById('editSecret').value = user.secret;
-                document.getElementById('editEndDate').value = user.endDate;
                 document.getElementById('editActive').value = user.active.toString();
                 document.getElementById('editModal').style.display = 'block';
             }
@@ -577,69 +437,6 @@
         function closeModal() {
             document.getElementById('editModal').style.display = 'none';
             editingUserId = null;
-        }
-
-        function createUser() {
-            document.getElementById('createModal').style.display = 'block';
-        }
-
-        function closeCreateModal() {
-            document.getElementById('createModal').style.display = 'none';
-            document.getElementById('createForm').reset();
-        }
-
-        function toggleSecret(element, secret) {
-            if (element.classList.contains('revealed')) {
-                element.textContent = '*'.repeat(secret.length);
-                element.classList.remove('revealed');
-            } else {
-                element.textContent = secret;
-                element.classList.add('revealed');
-            }
-        }
-
-        function generateSecret() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-            let secret = '';
-            for (let i = 0; i < 15; i++) {
-                secret += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('createSecret').value = secret;
-        }
-
-        function generateEditSecret() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-            let secret = '';
-            for (let i = 0; i < 15; i++) {
-                secret += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('editSecret').value = secret;
-        }
-
-        function deleteUser() {
-            if (editingUserId) {
-                const user = users.find(u => u.id === editingUserId);
-                if (user) {
-                    document.getElementById('deleteUserName').textContent = user.fio;
-                    document.getElementById('confirmModal').style.display = 'block';
-                }
-            }
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').style.display = 'none';
-        }
-
-        function confirmDelete() {
-            if (editingUserId) {
-                const userIndex = users.findIndex(u => u.id === editingUserId);
-                if (userIndex !== -1) {
-                    users.splice(userIndex, 1);
-                    filterTable();
-                    closeModal();
-                    closeConfirmModal();
-                }
-            }
         }
 
         document.getElementById('editForm').addEventListener('submit', async function(e) {
@@ -673,43 +470,26 @@
             }
         });
 
-        document.getElementById('createForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newUser = {
-                id: users.length + 1,
-                fio: document.getElementById('createFio').value,
-                role: document.getElementById('createRole').value,
-                secret: document.getElementById('createSecret').value,
-                date: new Date().toISOString().split('T')[0],
-                endDate: document.getElementById('createEndDate').value,
-                active: document.getElementById('createActive').value === 'true'
-            };
-            
-            users.push(newUser);
-            filterTable();
-            closeCreateModal();
-        });
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('adminUsername');
+                window.location.href = 'admin_login.html';
+            }
+        }
 
+        // Закрытие модального окна при клике вне его
         window.onclick = function(event) {
             const modal = document.getElementById('editModal');
             if (event.target === modal) {
                 closeModal();
             }
-            
-            const createModal = document.getElementById('createModal');
-            if (event.target === createModal) {
-                closeCreateModal();
-            }
-            
-            const confirmModal = document.getElementById('confirmModal');
-            if (event.target === confirmModal) {
-                closeConfirmModal();
-            }
         }
 
         // Инициализация при загрузке страницы
-        loadUsers();
+        if (checkAuth()) {
+            loadUsers();
+        }
     </script>
 </body>
 </html>

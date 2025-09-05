@@ -1,5 +1,9 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 
+import os
 import logging
 
 from .pydantic import UserProperties
@@ -9,6 +13,14 @@ server_router = APIRouter(
     prefix='/server',
     tags=['server']
 )
+
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# static_dir = os.path.join(BASE_DIR, 'static')
+# templates_dir = os.path.join(BASE_DIR, 'templates')
+
+server_router.mount('/static', StaticFiles(directory='static/'), name="static")
+templates = Jinja2Templates(directory='templates/')
 
 server_logger = logging.getLogger(__name__)
 
@@ -40,7 +52,14 @@ async def operation_emulation(user_properties: UserProperties):
         return check_keys
     except:
         server_logger.error('Error checking key', exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @server_router.get('/admin/login')
-async def admin_login():
-    pass
+async def admin_login(request: Request):
+    return templates.TemplateResponse("admin_login.html", {"request": request})
+
+@server_router.get('/admin')
+async def admin(request: Request):
+    return templates.TemplateResponse("admin_panel.html", {"request": request})

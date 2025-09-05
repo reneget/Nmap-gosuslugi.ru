@@ -100,7 +100,7 @@
         </form>
     </div>
 
-    <script src="api.js"></script>
+    <script src="/static/api.js"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -108,10 +108,10 @@
             const password = document.getElementById('password').value;
             
             try {
-                // Проверяем вход через API
-                const result = await api.adminLogin();
+                // Проверяем вход через API с передачей данных
+                const result = await api.adminLogin(username, password);
                 
-                if (result) {
+                if (result && result.success) {
                     // Сохраняем информацию о входе
                     localStorage.setItem('adminLoggedIn', 'true');
                     localStorage.setItem('adminUsername', username);

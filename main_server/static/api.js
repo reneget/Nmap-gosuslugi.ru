@@ -1,8 +1,8 @@
 // API клиент для подключения к database и main_server
 class API {
     constructor() {
-        this.databaseUrl = 'http://localhost:8001'; // database API
-        this.mainServerUrl = 'http://localhost:8002'; // main_server API
+        this.databaseUrl = 'http://localhost:8000'; // database API
+        this.mainServerUrl = 'http://localhost:8001'; // main_server API
     }
 
     // Database API методы
@@ -122,9 +122,18 @@ class API {
         }
     }
 
-    async adminLogin() {
+    async adminLogin(username, password) {
         try {
-            const response = await fetch(`${this.mainServerUrl}/server/admin/login`);
+            const response = await fetch(`${this.mainServerUrl}/server/admin/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
