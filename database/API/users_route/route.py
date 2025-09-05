@@ -23,11 +23,20 @@ async def create_user_route(user: pd_md.User_create, db: Session = Depends(get_d
     try:
         user_logger.info('Request to create a new employee')
         created_user = UserRepo(db).create_user(**user.__dict__)
+
+        if created_user is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Not unique'
+            )
         user_logger.debug(f'{repr(created_user)}')
         user_logger.info('New employee created')
         user_logger.info(f'Employee {created_user.full_name} was issued a new token')
 
         return pd_md.User(**created_user.__dict__)
+    except HTTPException:
+        user_logger.error('An error occurred while creating the employee', exc_info=True)
+        raise
     except:
         user_logger.error('An error occurred while creating the employee', exc_info=True)
         raise HTTPException(
@@ -41,7 +50,6 @@ async def get_user_by_id_api(user_id: int, db: Session = Depends(get_db)):
         user = UserRepo(db).get_user_by_id(user_id)
         user_logger.info('User received')
         user_logger.debug(repr(user))
-        print(user)
 
         if user is None:
             raise HTTPException(
