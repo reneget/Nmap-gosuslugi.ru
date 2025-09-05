@@ -40,3 +40,7 @@ async def operation_emulation(user_properties: UserProperties):
         return check_keys
     except:
         server_logger.error('Error checking key', exc_info=True)
+
+@server_router.get('/admin/login')
+async def admin_login():
+    pass
