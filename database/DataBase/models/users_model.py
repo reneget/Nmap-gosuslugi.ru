@@ -13,6 +13,7 @@ class Users(Base):
     position = Column(String, unique=False, nullable=False)
     secret_key = Column(String, unique=True, nullable=False)
     is_active = Column(Boolean, unique=False, nullable=False, default=True)
+    create_time = Column(DateTime, unique=False, nullable=False)
     kill_time = Column(DateTime, unique=False, nullable=True)
 
     def __repr__(self):

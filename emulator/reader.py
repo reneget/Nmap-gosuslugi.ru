@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 import json
-
 def send_to_handler(user_id, entropy, pwd):
     """
     Заглушка для отправки данных в другой обработчик
@@ -10,7 +8,6 @@ def send_to_handler(user_id, entropy, pwd):
         'entropy': entropy,
         'pwd': pwd
     }
-    
     # Заглушка - просто выводим данные
     print(f"Отправка в обработчик: {json.dumps(data, ensure_ascii=False)}")
     

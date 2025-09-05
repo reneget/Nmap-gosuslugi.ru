@@ -13,7 +13,7 @@ class UserRepo:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, full_name: str, position: str, secret_key: str, kill_time: datetime.datetime = None) -> Users:
+    def create_user(self, full_name: str, position: str, secret_key: str, create_time: datetime.datetime, kill_time: datetime.datetime = None) -> Users:
         """
         Func of creating new user in Database
         :param full_name: Name of user
@@ -23,7 +23,7 @@ class UserRepo:
         :return: User ORM model from DataBase
         """
         try:
-            user = Users(full_name=full_name, position=position, secret_key=secret_key, kill_time=kill_time)
+            user = Users(full_name=full_name, position=position, secret_key=secret_key, create_time=create_time, kill_time=kill_time)
             self.db.add(user)
             self.db.commit()
             self.db.refresh(user)
