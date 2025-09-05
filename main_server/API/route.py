@@ -79,27 +79,23 @@ async def admin_panel(request: Request):
     return templates.TemplateResponse("admin_panel.html", {"request": request})
 
 
-# # Новый POST-роут для обработки формы логина
-# @server_router.post('/admin/login')
-# async def login(response: Response, username: str = Form(...), password: str = Form(...)):
-#     if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect username or password")
-#
-#     # Создаем JWT токен
-#     access_token = jwt.encode({"sub": username}, SECRET_KEY, algorithm=ALGORITHM)
-#
-#     # Устанавливаем куки (httponly для безопасности, чтобы JS не имел доступа)
-#     response.set_cookie(
-#         key="access_token",
-#         value=access_token,
-#         httponly=True,
-#         secure=False,  # В продакшене True для HTTPS
-#         samesite="lax",
-#         max_age=3600  # 1 час, настройте по нужде
-#     )
-#
-#     return RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
+# Новый POST-роут для обработки формы логина
+@server_router.post('/admin/login')
+async def login(response: Response, username: str = Form(...), password: str = Form(...)):
+    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect username or password")
 
-@server_router.get("/admin/login", response_class=HTMLResponse)
-async def admin_login(request: Request):
-    return templates.TemplateResponse("admin_login.html", {"request": request})
+    # Создаем JWT токен
+    access_token = jwt.encode({"sub": username}, SECRET_KEY, algorithm=ALGORITHM)
+
+    # Устанавливаем куки (httponly для безопасности, чтобы JS не имел доступа)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,  # В продакшене True для HTTPS
+        samesite="lax",
+        max_age=3600  # 1 час, настройте по нужде
+    )
+
+    return RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
