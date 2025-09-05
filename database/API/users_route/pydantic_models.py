@@ -6,7 +6,7 @@ class User(BaseModel):
     full_name: str
     position: str
     secret_key: str
-    counter: str
+    counter: int
 
 class User_update(BaseModel):
     full_name: Optional[str] = None
@@ -16,4 +16,3 @@ class User_create(BaseModel):
     full_name: str
     position: str
     secret_key: str
-    counter: str

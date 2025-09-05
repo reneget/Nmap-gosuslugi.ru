@@ -12,7 +12,7 @@ class UserRepo:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, full_name: str, position: str, unique_key: str) -> Users:
+    def create_user(self, full_name: str, position: str, secret_key: str) -> Users:
         """
         Func of creating new user in Database
         :param full_name: Name of user
@@ -21,7 +21,7 @@ class UserRepo:
         :return: User ORM model from DataBase
         """
         try:
-            user = Users(full_name=full_name, position=position, unique_key=unique_key)
+            user = Users(full_name=full_name, position=position, secret_key=secret_key)
             self.db.add(user)
             self.db.commit()
             self.db.refresh(user)
@@ -43,10 +43,10 @@ class UserRepo:
         except Exception:
             user_repo_logger.error(f'Error when getting user [{user_id}] from DataBase', exc_info=True)
     
-    def get_user_key_properties(self, user_id: int) -> tuple[str, str] | None:
+    def get_user_key_properties(self, user_id: int) -> tuple[str] | None:
         try:
-            secret_key = self.db.query(Users.secret_key).filter(Users.user_id == user_id).first()
-            counter = self.db.query(Users.counter).filter(Users.user_id == user_id).first()
+            secret_key = self.db.query(Users.secret_key).filter(Users.user_id == user_id).scalar()
+            counter = self.db.query(Users.counter).filter(Users.user_id == user_id).scalar()
             user_repo_logger.info(f'Successfully retrieving the key properties [{secret_key, counter}] from the database')
             return secret_key, counter
         except Exception:
@@ -80,24 +80,6 @@ class UserRepo:
             return user
         except Exception:
             user_repo_logger.error(f'Error when updating user [{repr(user)}] in DataBase')
-
-    def update_user_key(self, user_id: int, new_key: str) -> Type[Users] | None:
-        """
-        Func what special updates user secret key. Only the admin has access to it.
-        :param user_id: User ID for updating secret key
-        :param new_key: new key 🤷‍♂️
-        :return: User ORM model from DataBase
-        """
-        user = self.get_user_by_id(user_id)
-        try:
-            user.unique_key = new_key
-            user.counter = user.counter + 1
-            self.db.commit()
-            self.db.refresh(user)
-            user_repo_logger.info(f'Successfully update user [{repr(user)}] secret key in DataBase')
-            return user
-        except Exception:
-            user_repo_logger.error(f'Error when updating user [{repr(user)}] secret key in Database')
 
     def delete_user(self, user_id: int) -> Type[Users] | None:
         """
