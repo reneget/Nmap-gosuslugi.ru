@@ -7,7 +7,6 @@ import secrets
 def generate_entropy(length) -> str:
     return secrets.token_hex(length)
 
-
 def generate_key(shared_secret: str, entropy: str) -> str:
     """
     Генерирует ключ на основе секрета и "энтропии".
@@ -23,11 +22,4 @@ def generate_key(shared_secret: str, entropy: str) -> str:
 
     # Вычисляем HMAC-SHA512 от энтропии с использованием секрета
     hmac_hash = hmac.new(secret_bytes, entropy_bytes, hashlib.sha512).digest()
-<<<<<<< HEAD
-    return base64.b64encode(hmac_hash).decode('utf-8').rstrip('='), entropy
-
-shared_secret = str(open('crypto/secret.txt', 'r').read())
-key_base64 = generate_key(shared_secret, entropy=generate_entropy(16))[0]
-=======
     return base64.b64encode(hmac_hash).decode('utf-8').rstrip('=')
->>>>>>> 8ae3f29858b55f25a97458379fed2af986723561
