@@ -13,7 +13,7 @@ def generate_key(shared_secret: str, entropy: str) -> str:
     :param entropy: "энтропия"
     :return: Строковый ключ.
     """
-    # Конвертируем счётчик в байты (big-endian, 8 байт)
+    # Конвертируем энтропию в байты (big-endian, 8 байт)
     entropy_bytes = bytes.fromhex(entropy)
 
     # Кодируем секрет в байты
