@@ -23,8 +23,8 @@ class Password:
         return status
     
     @staticmethod
-    def generated_new_key(secret_key: str, counter: int, output_format: str = 'base64') -> str:
+    def generated_new_key(secret_key: str, entropy: str) -> str:
         func_logger.info('Generate a new key')
-        new_key = generate_key(secret_key, counter, output_format)
+        new_key = generate_key(secret_key, entropy)
         func_logger.info('New key generated')
         return new_key
