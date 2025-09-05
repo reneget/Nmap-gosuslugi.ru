@@ -7,7 +7,7 @@
 
 2 КТ: На данном этапе реализованы база данных, API базы данных, API сервера, API reader'а(эмуляция отправки сигнала на сервер), криптографический алгоритм для создания ключей, процесс аутенфикации, веб-интерфейс админ-панели. Реализовано 60%. Всё было реализовано в виде микросервисной архитектуры(разделено по docker-контейнерам). В планах: создание и реализация эмуляторов карты и reader'а, а также функционал админ-панели.
 
-![Untitled (1)](https://github.com/user-attachments/assets/c55548db-99a3-42ed-b037-026a253b9652)
+<img width="1280" height="496" alt="image" src="https://github.com/user-attachments/assets/c10c5bdb-bf98-4ea5-a1a2-196d30192ca2" />
 
 <img width="1584" height="897" alt="image" src="https://github.com/user-attachments/assets/66438171-ee92-4beb-93bf-809bbfce1ae7" />
 
