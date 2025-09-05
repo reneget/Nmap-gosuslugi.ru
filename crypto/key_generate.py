@@ -25,4 +25,3 @@ def generate_key(shared_secret: str, entropy: str) -> str:
 
 shared_secret = str(open('crypto/secret.txt', 'r').read())
 key_base64 = generate_key(shared_secret, entropy=generate_entropy(16))[0]
-print(key_base64)
