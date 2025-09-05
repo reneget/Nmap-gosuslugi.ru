@@ -1,10 +1,9 @@
 import hmac
 import hashlib
-import struct
 import base64
 import secrets
 
-def generate_entropy(length):
+def generate_entropy(length) -> str:
     return secrets.token_hex(length)
 
 def generate_key(shared_secret: str, entropy: str) -> str:
@@ -25,4 +24,4 @@ def generate_key(shared_secret: str, entropy: str) -> str:
     return base64.b64encode(hmac_hash).decode('utf-8').rstrip('='), entropy
 
 shared_secret = str(open('crypto/secret.txt', 'r').read())
-key_base64 = generate_key(shared_secret, entropy=generate_entropy(16))
+key_base64 = generate_key(shared_secret, entropy=generate_entropy(16))[0]

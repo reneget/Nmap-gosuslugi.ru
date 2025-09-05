@@ -1,1 +1,1 @@
-from .key_gen import generate_key
+from .key_generate import generate_key, generate_entropy
