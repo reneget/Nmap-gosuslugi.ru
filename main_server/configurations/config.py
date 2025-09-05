@@ -11,11 +11,5 @@ class LokiConfig:
 
 
 @dataclass
-class DBConfig:
-    db_url: str
-
-
-@dataclass
 class Config:
     loki: LokiConfig
-    db: DBConfig
