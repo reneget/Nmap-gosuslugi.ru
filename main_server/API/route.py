@@ -15,43 +15,8 @@ server_router = APIRouter(
     tags=['server']
 )
 
-# Указываем абсолютные пути относительно корня проекта
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-static_dir = os.path.join(base_dir, 'static')
-templates_dir = os.path.join(base_dir, 'templates')
-
-print(f"Mounting static files from: {static_dir}")
-print(f"Mounting templates from: {templates_dir}")
-
-server_router.mount('/static', StaticFiles(directory=static_dir), name="static")
-templates = Jinja2Templates(directory=templates_dir)
-
 server_logger = logging.getLogger(__name__)
 
-class AdminLoginData(BaseModel):
-    username: str
-    password: str
-
-@server_router.post('/admin/login')
-async def admin_login_post(login_data: AdminLoginData):
-    try:
-        server_logger.info(f'Admin login attempt for username: {login_data.username}')
-        is_valid = True
-        if is_valid:
-            return JSONResponse({"success": True})
-        else:
-            return JSONResponse({"success": False, "message": "Неверные учетные данные"})
-    except Exception as e:
-        server_logger.error(f"Ошибка авторизации: {e}", exc_info=True)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@server_router.get('/admin/login')
-async def admin_login(request: Request):
-    return templates.TemplateResponse("admin_login.html", {"request": request})
-
-@server_router.get('/admin')
-async def admin(request: Request):
-    return templates.TemplateResponse("admin_panel.html", {"request": request})
 
 @server_router.post('/chek/password')
 async def operation_emulation(user_properties: UserProperties):
