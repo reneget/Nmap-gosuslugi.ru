@@ -1,8 +1,8 @@
 // API клиент для подключения к database и main_server
 class API {
     constructor() {
-        this.databaseUrl = 'http://localhost:8001'; // database API
-        this.mainServerUrl = 'http://localhost:8002'; // main_server API
+        this.databaseUrl = 'http://localhost:8000'; // database API
+        this.mainServerUrl = 'http://localhost:8001'; // main_server API
     }
 
     // Database API методы
