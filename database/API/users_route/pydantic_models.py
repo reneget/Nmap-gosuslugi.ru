@@ -9,15 +9,18 @@ class User(BaseModel):
     position: str
     secret_key: str
     is_active: bool
-    kill_time: datetime.datetime
+    create_time: datetime.datetime
+    kill_time: Optional[datetime.datetime] = None
 
 class User_update(BaseModel):
     full_name: Optional[str] = None
     position: Optional[str] = None
     is_active: Optional[bool] = None
+    kill_time: Optional[datetime.datetime] = None
 
 class User_create(BaseModel):
     full_name: str
     position: str
     secret_key: str
+    create_time: datetime.datetime
     kill_time: Optional[datetime.datetime] = None
