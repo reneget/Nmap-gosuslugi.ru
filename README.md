@@ -25,5 +25,3 @@
 
 <img width="1584" height="897" alt="image" src="https://github.com/user-attachments/assets/c8ab0e4e-f858-4622-91fb-ecfdaa6df2eb" />
 
-[Итоги по кейсу_кт3.pdf](https://github.com/user-attachments/files/22169370/_.3.pdf)
-
